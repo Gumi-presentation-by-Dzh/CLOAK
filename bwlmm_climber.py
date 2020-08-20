@@ -152,7 +152,7 @@ class memorymodel:
         self.randompath = ['', 'random_']
         self.reversepath = ['', 'reverse_']
         self.stallpath = ['', 'stall_']
-        self.endlifepath = 'type' + str(self.attacktype)+'_whb_bwlmm_climber_'+str(climbershift)+'_'+self.randompath[self.randomenable] + \
+        self.endlifepath = 'type' + str(self.attacktype)+'_bwlmm_climber_'+str(climbershift)+'_'+self.randompath[self.randomenable] + \
                             self.reversepath[self.reverseenable]+self.stallpath[self.stallenable]+'endlife.dat'
         self.lifelist = [[0,0] for y in range(len(x))]
         self.lifelist2 = [[0,0] for y in range(len(x))]

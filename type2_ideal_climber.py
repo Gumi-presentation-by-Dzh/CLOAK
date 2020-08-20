@@ -5,11 +5,11 @@ import defenselayer_ideal_climber as dl ####修改导入文件切换磨损均衡
 import sys
 ##############################
 ##############################
-tracepath = 'whb_trace.dat'
-endstatpath = 'whb_type2_ideal_endstat.dat'
-logpath = 'whb_type2_ideal_log.dat'
-endlifepath = 'whb_type2_ideal_endlife.dat'
-initlifepath = 'whb_type2_ideal_initlife.dat'
+tracepath = 'trace.dat'
+endstatpath = 'wendstat.dat'
+logpath = 'log.dat'
+endlifepath = 'endlife.dat'
+initlifepath = 'initlife.dat'
 areashift = 0 #4kB 粒度
 maxpagenums = (4194304>>2) >> areashift #16GB
 isbreak = 0###结束标志

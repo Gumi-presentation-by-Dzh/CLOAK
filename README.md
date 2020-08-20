@@ -3,33 +3,23 @@
 
 &#160; &#160; &#160; &#160; CLOAK is a detection and defense mechanism to neutralize Flip Attacks. CLOAK leverages a novel wear leveling algorithm called CLIMBER to dynamically calibrate address mappings so that intensive writes to weak cells are redirected to strong cells.  CLIMBER also conceals weak NVM cells from attackers by randomly mapping cold addresses to weak NVM area. Moreover, CLOAK uses a new metric--hotness deviation to characterize violent fluctuations of write intensity on a memory address in two adjacent intervals, and thus can identify Flip Attacks efficiently. CLOAK then leverages an active self-protection scheme to defend Flip Attacks.
 
-CLOAK Setup,Compiling,Configuration and How to test
+CLOAK Dependencies, Running, and Result
 ------------
 **1.External Dependencies**  
-&#160; &#160; &#160; &#160; Before install hybrid simulator CLOAK, it's essential that you have already install dependencies listing below.
-* gcc(>=4.6)
-* numactl-devel
-* [libconfig](http://www.hyperrealm.com/libconfig/libconfig-1.5.tar.gz) or libconfig-devel
-* kernel-devel
+&#160; &#160; &#160; &#160; Before running CLOAK codes, it's essential that you have already install dependencies listing below.
+* numpy
 * python(>=2.7)
-* PMU Toolkit (When you using Multicore version, it needs to be manually installed and configured) [Intel PMU profiling tools](https://github.com/andikleen/pmu-tools.git)
+* Zsim-NVMain (We use Zsim to collect memory access trace. You can also use other simulators to collect trace) [axle-zsim-nvmain](https://github.com/AXLEproject/axle-zsim-nvmain)
 
-You can run 'sudo /scripts/install.sh' in order to automatically install some of these dependencies.
+**2.Running**
 
-**2.Compiling**
+* First, make sure the trace is in the same path.
+* run CLOAK codes by: python typeX_YYY_climber.py arg1 arg2.
+* X means attack types : non-attack, Inconsistent Write Attack, and Hot-cold Page Swapping Attack.
+* YYY means the baseline system : HC-to-SW, BWL, and TWL.
+* arg1 and arg2 are used to enable our climber and WPRM schemes.
 
-* Compiling and Installation
+**3.Result**  
+&#160; &#160; &#160; &#160; The hotness deviation result and endurance result are recorded by defenselayer_YYY_climber.py and YYYmm_climber.py in \*.dat files.
 
-First, Compiling the emulator's module. From the emulator's source code /Regular_version/HME folder, execute make.
-
-```javascript
-[root @node1 HME]# cd Regular_version
-[root @node1 Regular_version]# cd HME
-[root @node1 HME]# make  //to compiling the HME
-```
-
-* Update configuration
-```javascript
-11111
-```
 

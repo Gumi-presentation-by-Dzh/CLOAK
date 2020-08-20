@@ -5,7 +5,7 @@ import defenselayer_twl_climber as dl ####修改导入文件切换磨损均衡�
 import sys
 ##############################
 ##############################
-tracepath = 'whb_trace.dat'
+tracepath = 'trace.dat'
 endstatpath = 'endstat.dat'
 logpath = 'log.dat'
 endlifepath = 'endlife.dat'

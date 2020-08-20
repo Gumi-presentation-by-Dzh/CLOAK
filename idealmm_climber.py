@@ -31,7 +31,7 @@ class memorymodel:
         self.randompath = ['', 'random_']
         self.reversepath = ['', 'reverse_']
         self.stallpath = ['', 'stall_']
-        self.endlifepath = 'type' + str(self.attacktype)+'_whb_idealmm_climber_'+str(climbershift)+'_'+self.randompath[self.randomenable] + \
+        self.endlifepath = 'type' + str(self.attacktype)+'_idealmm_climber_'+str(climbershift)+'_'+self.randompath[self.randomenable] + \
                             self.reversepath[self.reverseenable]+self.stallpath[self.stallenable]+'endlife.dat'
         np.random.seed(0)
         print("gen life distribution begin")

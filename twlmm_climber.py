@@ -69,7 +69,7 @@ class memorymodel:
         self.interswaptimes = 0
     
         self.no = no
-        self.endlifepath = 'type' + str(self.attacktype)+'_whb_twlmm_climber_60_endlife.dat'
+        self.endlifepath = 'type' + str(self.attacktype)+'_twlmm_climber_60_endlife.dat'
     
         self.totalcount = 0
         self.remaptimes = 0
