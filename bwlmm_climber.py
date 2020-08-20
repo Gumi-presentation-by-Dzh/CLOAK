@@ -7,7 +7,7 @@ import math
 
 mu = 0.3
 sigma = mu*0.11 #
-remapthreshold = 2000000###交换间隔
+remapthreshold = 2000000
 cyclethreshold = 20000000
 
 lineshift = 6
@@ -23,8 +23,8 @@ hotlistsize =list1size + list2size + list3size
 
 halfinterval = cyclethreshold
 
-isbreak = 0###结束标志
-listsize = [list1size,list2size,list3size]###两个必须相同
+isbreak = 0
+listsize = [list1size,list2size,list3size]
 climbethreshold = 10
 
 class bloomfilter :
@@ -84,12 +84,12 @@ class bloomfilter :
         if self.addr2hot[addr_temp] != -1:
             inhot = 1
             if self.addr2hot[addr_temp] < list3size:
-                if self.hotlist[groupindex][1][0] != -1:#########list3中被访问直接放到list2最后
+                if self.hotlist[groupindex][1][0] != -1:#######
                     self.addr2hot[self.hotlist[groupindex][1][0]] = self.addr2hot[addr_temp]
                 self.hotlist[groupindex][2][self.addr2hot[addr_temp]] = self.hotlist[groupindex][1][0]
                 self.addr2hot[addr_temp] = list3size
                 self.hotlist[groupindex][1][0] = addr_temp
-            elif self.addr2hot[addr_temp] < list3size + list2size - 1:######list2中被访问向上移一位
+            elif self.addr2hot[addr_temp] < list3size + list2size - 1:##
                 if self.hotlist[groupindex][1][self.addr2hot[addr_temp] - list3size +1] != -1:
                     self.addr2hot[self.hotlist[groupindex][1][self.addr2hot[addr_temp] - list3size+1]] = self.addr2hot[addr_temp]
                 self.hotlist[groupindex][1][self.addr2hot[addr_temp] - list3size] = self.hotlist[groupindex][1][self.addr2hot[addr_temp] - list3size+1]
@@ -126,7 +126,6 @@ class bloomfilter :
 
 class memorymodel:
     def __init__(self, areasize, attacktype, no, areashift, randomenable,randomshift, reverseenable,stallenable,climbershift):
-        ##areasize:最大页号，attacktype:攻击类型；no:序号；areashift：相对于页号的粒度移位4MB = 10
         self.maxpagenums = areasize
         self.climbershift = climbershift
         areanums = self.maxpagenums >> 10
@@ -159,43 +158,41 @@ class memorymodel:
         self.sortednow = [0 for  y in range(len(x))]
         self.climbla2hot = [0 for  y in range(len(x))]####climber
         self.start = 0
-        #self.life2sorted = [0 for y in range(self.maxpagenums)]
         for i in range(len(x)) :
             if(self.minlifetime > x[i]):
                 self.minlifetime = x[i]
             if(self.maxlifetime < x[i]):
                 self.maxlifetime = x[i]
             self.lifelist[i][0] = i
-            self.lifelist[i][1] = x[i]###页面i寿命为x[i]
+            self.lifelist[i][1] = x[i]#
             self.lifelist2[i][0] = i
-            self.lifelist2[i][1] = x[i]###页面i寿命为x[i]
+            self.lifelist2[i][1] = x[i]#
         x = []
         print("minlifetime =%d,maxlifetime =%d"%(int(self.minlifetime),int(self.maxlifetime)))
         self.maplist = [0 for x in range(self.maxpagenums)]
         self.reverselist = [0 for x in range(self.maxpagenums)]
-        self.countlist = [[0,0] for x in range(self.maxpagenums)]##oad使用
+        self.countlist = [[0,0] for x in range(self.maxpagenums)]#
         self.climberlocthre= [0 for  y in range(self.maxpagenums)]
         self.voidreturn = [[0,0]]
         print("sort pages begin")
-        self.sortedlist = sorted(self.lifelist2, key = lambda x:x[1])####按照寿命排序后，进行配对，配对公式：
+        self.sortedlist = sorted(self.lifelist2, key = lambda x:x[1])##
         print("sort pages end")
         for i in range(len(self.sortedlist)):
             self.climbla2hot[self.sortedlist[i][0]] = i
             self.sortednow[i] = self.sortedlist[i][0]
             self.climberlocthre[i] = int(climbethreshold*(self.lifelist2[i][1]/self.minlifetime))
-            #self.climberlocthre[i] = climbethreshold
         print("map begin")
         for i in range(len(self.maplist)):
             self.maplist[i] = i
             self.reverselist[i] = i
             self.countlist[i][0] = i
         print("map end")
-        self.visitcount = [[0 for x in range(2)] for y in range(self.maxpagenums)]###########记录每个页从上次交换起被访问的次数
+        self.visitcount = [[0 for x in range(2)] for y in range(self.maxpagenums)]##
         for i in range(len(self.visitcount)):
             self.visitcount[i][0] = i
         self.totalcount = 0
         self.remaptimes = 0
-        self.totaltime = 0####循环内次数
+        self.totaltime = 0###
         print("bloomfilter begin")
         self.bloomfilter1 = bloomfilter(groupshift, self.maxpagenums, hashnums, counternums,list1size, list2size, list3size,halfinterval)
         print("bloomfilter1 end")
@@ -212,12 +209,10 @@ class memorymodel:
     def getrank2addr(self):
         return self.rank2addr
     def climber(self,addr_temp,counterv):
-        #if counterv % climbethreshold == 0 and self.start == 1:
         addr= self.maplist[addr_temp]
         localclimbethreshold = self.climberlocthre[addr]
         maxup = 0
         if counterv % (localclimbethreshold) == 0:
-            #step = int(counterv / localclimbethreshold)
             randommax = 1<<self.climbershift
             climberareaindex = self.climbla2hot[addr_temp] >> self.climbershift
             targetindex = climberareaindex
@@ -270,63 +265,42 @@ class memorymodel:
         if self.totalcount < remapthreshold:
             self.visitcount[addr_temp][1] = self.visitcount[addr_temp][1] + 1
         self.totalcount = self.totalcount + 1
-#全局计数 begin
         isclimb = self.bloomfilter1.access(addr_temp, hotthreshold,self.totalcount)
         self.bloomfilter2.access((addr_temp >> groupshift), hotthreshold,self.totalcount)
         if self.climber(addr_temp,isclimb) == -1:
             return (-1,[self.bloomfilter1.voidlist,self.bloomfilter2.voidlist],self.voidreturn)
-#全局计数 end
-#预测阶段计数 begin
-#       if self.totalcount < remapthreshold:
-#            isclimb = self.bloomfilter1.access(addr_temp, hotthreshold,self.totalcount)
-#            self.bloomfilter2.access((addr_temp >> groupshift), hotthreshold,self.totalcount)
-#            if self.climber(addr_temp,isclimb) == -1:
-#                return (-1,[self.bloomfilter1.voidlist,self.bloomfilter2.voidlist],self.voidreturn)
-#        else:
-#            isclimb = self.bloomfilter1.count(addr_temp)
-#            if self.climber(addr_temp,isclimb) == -1:
-#                return (-1,[self.bloomfilter1.voidlist,self.bloomfilter2.voidlist],self.voidreturn)
-#预测阶段计数 end
         self.lifelist[addr][1] = self.lifelist[addr][1] - 1
         if self.lifelist[addr][1] < 0:
             return (-1,[self.bloomfilter1.voidlist,self.bloomfilter2.voidlist],self.voidreturn)
         if self.totalcount == cyclethreshold:
             self.totalcount = 0
             print('maxSL:%d'%(self.maxSL))
-            #self.bloomfilter1.clear()  ###不注释就是预测阶段计数，注释就是全局计数
-            #self.bloomfilter2.clear()  ###不注释就是预测阶段计数，注释就是全局计数
         if self.totalcount == remapthreshold:
             self.start = 1
             #self.totalcount = 0
             for i in range(len(self.maplist)):
                 self.countlist[i][1] = self.bloomfilter1.getcount(i)
             return (1, [self.bloomfilter1.hotlist,self.bloomfilter2.hotlist], sorted(self.countlist, key = lambda x:x[1]))
-            #print("remap end")
         elif self.totalcount % remapthreshold == 0:
             return (2, [self.bloomfilter1.voidlist,self.bloomfilter2.voidlist], self.voidreturn)
         else:
             return (0, [self.bloomfilter1.voidlist,self.bloomfilter2.voidlist], self.voidreturn)
-    #def getlife2sorted(self):
-    #    return self.life2sorted
     def doswap(self, addr_temp, isswap):
         self.climberpoint = self.climberpoint - 1
         self.maxSL = 0
         self.rank2addrp = 0
-        #if self.climberpoint <= (int(((self.maxpagenums / 4) * 3))>>climbershift):
         if self.climberpoint <= (int(((self.maxpagenums / 2) ))>>self.climbershift):
             self.climberpoint = (self.maxpagenums - 1) >> self.climbershift
         if isswap != 0:
             addr = self.maplist[addr_temp]
             if self.randomenable == 1:
                 self.randomkey = random.randint(0,(1<<self.randomshift)-1)
-            mapindex = 0#####映射过的地址数目
+            mapindex = 0#
             rank1 = self.bloomfilter1.rank()
             rank2 = self.bloomfilter2.rank()
             lifenowlist = sorted(self.lifelist, key = lambda x:x[1])
             for i in range(len(lifenowlist)):
                 self.sortednow[i] = lifenowlist[i][0]
-            #print(lifenowlist[-1][0])
-            print('当前最弱页寿命：%d'%(int(lifenowlist[0][1])))
             maxwearrate = 0.0
             wearrate = 0.0
             maxlife = 0
@@ -339,8 +313,6 @@ class memorymodel:
                     maxlife = self.lifelist[i][1]
                     maxlife2 = self.lifelist2[i][1]
                     maxi = i
-            print('当前最大磨损率：%f'%(maxwearrate))
-            print('最大磨损页%d寿命：%f,%f'%(maxi,maxlife,maxlife2))
             for listindex1 in range (len(rank2[0])):
                 for gpindex2 in range(len(rank2)):
                     for listindex2 in range (len(rank2[gpindex2])):

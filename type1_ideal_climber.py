@@ -1,7 +1,7 @@
 #coding:utf-8
 import random
 import numpy as np
-import defenselayer_ideal_climber as dl ####修改导入文件切换磨损均衡策略
+import defenselayer_ideal_climber as dl ##
 import sys
 ##############################
 ##############################
@@ -10,15 +10,14 @@ endstatpath = 'endstat.dat'
 logpath = 'log.dat'
 endlifepath = 'endlife.dat'
 initlifepath = 'initlife.dat'
-areashift = 0 #4kB 粒度
+areashift = 0 
 maxpagenums = (4194304 >> 2) >> areashift #4GB
-isbreak = 0###结束标志
+isbreak = 0#
 attacktype = 1
 attackpp = 1
 climbershift = 10
-#endnums = 220001000 #输出10个周期的结果
-endnums = 200001000 ##输出140个周期的结果
-attacknums = 0##记录经过了几次写操作
+endnums = 200001000 #
+attacknums = 0#
 ##########################################################
 class AcListGenerator:
     def __init__(self, type1, areasize, attackpp,randomenable, reverseenable, stallenable):
@@ -27,7 +26,7 @@ class AcListGenerator:
         self.type = type1
         self.attackpp = attackpp
         self.areasize = areasize
-        self.attackarea = self.areasize###256 = hotlis大小，12= groupshift
+        self.attackarea = self.areasize
         self.attackflag = [0 for i in range(self.attackarea)]
         self.flag = 0
         self.index = 0
@@ -41,10 +40,10 @@ class AcListGenerator:
             return 0
         else:
             return 1
-    def getindex(self):####round 0：hot：self.hot+2 cold : 0 other:1
+    def getindex(self):
         ans = self.index
         if self.flag == 0:
-            if self.index >= self.attackarea - 2:###最冷页写0次
+            if self.index >= self.attackarea - 2:##
                 self.round = 1
                 self.index = 0
             elif self.round == 0:

@@ -1,7 +1,7 @@
 #coding:utf-8
 import random
 import numpy as np
-import defenselayer_twl_climber as dl ####修改导入文件切换磨损均衡策略
+import defenselayer_twl_climber as dl 
 import sys
 ##############################
 ##############################
@@ -10,8 +10,8 @@ endstatpath = 'endstat.dat'
 logpath = 'log.dat'
 endlifepath = 'endlife.dat'
 initlifepath = 'initlife.dat'
-areashift = 0 #4kB 粒度
-maxpagenums = (4194304>>2) >> areashift #16GB
+areashift = 0 
+maxpagenums = (4194304>>2) >> areashift
 isbreak = 0###结束标志
 attacktype = 2
 filelength = 0
@@ -28,8 +28,8 @@ class AcListGenerator:
         self.type = type
         self.areasize = areasize
         self.attackpp = attackpp
-        self.maplist = [0 for x in range(self.areasize)]###模拟页表:虚页->物理页
-        self.revlist = [0 for x in range(self.areasize)]###攻击者维护：物理页：虚页
+        self.maplist = [0 for x in range(self.areasize)]#
+        self.revlist = [0 for x in range(self.areasize)]#
         self.flag = 0
         self.index = 0
         self.round = 0
@@ -54,7 +54,7 @@ class AcListGenerator:
             return 0
         else:
             return 1
-    def getindex(self, addr_temp):####round 0：hot：self.hot+2 cold : 0 other:1
+    def getindex(self, addr_temp):
         raddr = 0
         if self.writelist2p != self.writelistp:
             raddr = self.writelist[self.writelistp]
@@ -79,8 +79,7 @@ class AcListGenerator:
     def dowhenswap(self, memorystat):
         if memorystat[0] == 1:
             self.cycles = self.cycles - 1
-            #sortedlist = sorted(memorystat, key = lambda x:x[1])
-            if self.attackp() == 1:###概率攻击
+            if self.attackp() == 1:
                 sortedlist =sorted(self.visittable, key = lambda x:x[1])
                 hotaddr = self.gethotaddr(-1,sortedlist)
                 coldaddrpair = self.getcoldaddr(-1,sortedlist)

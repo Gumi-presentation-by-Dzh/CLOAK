@@ -15,7 +15,6 @@ climbethreshold = 10
 ##################################
 class memorymodel:
     def __init__(self, areasize, attacktype, no, areashift, randomenable, randomshift,reverseenable,stallenable,climbershift):
-        ##areasize:最大页号，attacktype:攻击类型；no:序号；areashift：相对于页号的粒度移位4MB = 10
         self.maxpagenums = areasize
         self.climbershift = climbershift
         areanums = self.maxpagenums >> 10
@@ -52,9 +51,9 @@ class memorymodel:
             if(self.maxlifetime < x[i]):
                 self.maxlifetime = x[i]
             self.lifelist[i][0] = i
-            self.lifelist[i][1] = x[i]###页面i寿命为x[i]
+            self.lifelist[i][1] = x[i]#
             self.lifelist2[i][0] = i
-            self.lifelist2[i][1] = x[i]###页面i寿命为x[i]
+            self.lifelist2[i][1] = x[i]#
             self.life2sorted[i] = i
         x = []
         print("minlifetime =%d,maxlifetime =%d"%(int(self.minlifetime),int(self.maxlifetime)))
@@ -67,7 +66,7 @@ class memorymodel:
         self.maxSL = 0
         self.start = 0 #climber start flag
         print("sort pages begin")
-        self.sortedlist = sorted(self.lifelist2, key = lambda x:x[1])####按照寿命排序后，进行配对，配对公式：
+        self.sortedlist = sorted(self.lifelist2, key = lambda x:x[1])##
         for i in range(len(self.sortedlist)):
             self.life2sorted[self.sortedlist[i][0]] = i
             self.sortednow[i] = self.sortedlist[i][0]
@@ -80,12 +79,12 @@ class memorymodel:
             self.maplist[i] = i
             self.reverselist[i] = i####climber
         print("map end")
-        self.visitcount = [[0 for x in range(2)] for y in range(self.maxpagenums)]###########记录每个页从上次交换起被访问的次数
+        self.visitcount = [[0 for x in range(2)] for y in range(self.maxpagenums)]##
         for i in range(len(self.visitcount)):
             self.visitcount[i][0] = i
         self.totalcount = 0
         self.remaptimes = 0
-        self.totaltime = 0####循环内次数
+        self.totaltime = 0##
         self.climberpoint = (self.maxpagenums - 1) >> self.climbershift
         self.climbtime = 0
         self.disclimbtime =0
@@ -110,7 +109,7 @@ class memorymodel:
                 maxup = self.maxpagenums
             else:
                 maxup = (self.climberpoint + 1) <<  self.climbershift
-            if climberareaindex == self.climberpoint: ###当前位置+1
+            if climberareaindex == self.climberpoint: #
                 hotrandomaddr = random.randint(1, (1<<self.climbershift) - 1)
                 targetaddr = self.sortednow[(self.climbla2hot[addr_temp] + hotrandomaddr) % (1<<self.climbershift) + (maxup - (1<<self.climbershift))]
             else:
@@ -170,7 +169,6 @@ class memorymodel:
         if self.lifelist[addr][1] < 0:
             return (-1, self.visitcount, self.maplist)
         if self.totalcount == cyclethreshold:
-            #self.clear()###不注释就是预测阶段计数，注释就是全局计数
             print('maxSL:%d'%(self.maxSL))
             self.totalcount = 0
         if self.totalcount == remapthreshold:
@@ -199,7 +197,6 @@ class memorymodel:
             lifenowlist = sorted(self.lifelist, key = lambda x:x[1])
             for i in range(len(lifenowlist)):
                 self.sortednow[i] = lifenowlist[i][0]
-            print('当前最弱页寿命：%d'%(int(lifenowlist[0][1])))
             maxwearrate = 0.0
             wearrate = 0.0
             maxlife = 0
@@ -212,8 +209,6 @@ class memorymodel:
                     maxlife = self.lifelist[i][1]
                     maxlife2 = self.lifelist2[i][1]
                     maxi = i
-            print('当前最大磨损率：%f'%(maxwearrate))
-            print('最大磨损页%d寿命：%f,%f'%(maxi,maxlife,maxlife2))
             zeropoint = 0
             print('hottestaddr:%d'%(visitsortedlist[len(visitsortedlist) - 1][0]))
             print('hottestpage:%d'%(self.maplist[visitsortedlist[len(visitsortedlist) - 1][0]]))
@@ -238,9 +233,6 @@ class memorymodel:
                     print('map2weakaddr:%d'%(visitsortedlist[vindex][0]))
                     self.map2wearaddr = visitsortedlist[vindex][0]
                 self.rank2addr[visitsortedlist[vindex][0]] = len(visitsortedlist) - 1 - i
-                    #if self.randomenable == 1 and (len(lifenowlist) - 1 - index) < (1<<self.randomshift): 
-                    #    index = len(lifenowlist) - (1<<self.randomshift) + ((index + (1<<self.randomshift) - len(lifenowlist)) ^ self.randomkey)
-                #if self.randomenable == 1 and index < (1<<self.randomshift):
                 if self.randomenable == 1 and index < (((int(self.maxpagenums/2))>>self.randomshift)<<self.randomshift):
                     index = index ^ self.randomkey
                 if index < (1<<self.randomshift):

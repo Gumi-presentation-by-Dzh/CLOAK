@@ -2,7 +2,6 @@
 import random
 import numpy as np
 import idealmm_climber as mm
-####修改导入文件切换磨损均衡策略
 
 enable = 1
 normalp = 0
@@ -20,12 +19,12 @@ randomshift = 17
 ######################random end
 class DefenseLayer:
     def __init__(self, areasize, attacktype,randomenable, reverseenable, stallenable,climbershift):
-        self.areashift = 10####磨损均衡策略粒度：10=4MB
+        self.areashift = 10##
         self.maxpagenums = areasize
         self.attacktype = attacktype
         self.stallnums = 0
         self.attacknums = 0
-        self.stat = 0 ###当前是正常实行阶段，还是检测到可疑攻击阶段
+        self.stat = 0 ##
         self.randomenable = randomenable
         self.reverseenable = reverseenable
         self.stallenable = stallenable
@@ -39,10 +38,6 @@ class DefenseLayer:
     def __del__(self):
         self.logfile.close()
     def hotdistribute(self, sortedcountlist):
-    ########################################
-    #OAD策略，找最热的areasize的页面中，写次数
-    #最多的页与均匀的页的比例
-    ########################################
         areasize = 1000
         total = 0.0
         #for i in range(len(sortedcountlist)):
@@ -50,19 +45,10 @@ class DefenseLayer:
             total = total + sortedcountlist[len(sortedcountlist) - 1 - i][1]
         #average = float(total) / float(areasize)
         maxcount = sortedcountlist[len(sortedcountlist) - 1][1]
-        print('最大写入次数：%d,%d'%(maxcount,sortedcountlist[len(sortedcountlist) - 1][0]))
         level = float(float(maxcount) / float(total))
         self.logfile.write(U"level:%f\n"%level)
         return level
     def hotmonitor(self, sortedcountlist):
-    ########################################
-    #监视最热的1000个页被交换到的新地址与原地址的距离，
-    #依此来量化访存模式的变化程度
-    #加上一个最大距离
-    #maplist:映射表
-    #sortedcountlist：排序后的计数器列表
-    #life2sorted：记录该地址上次热度排序
-    ########################################
         dismatch = 0
         #areasize = min(self.maxpagenums/10,1<<randomshift)
         areasize = min(self.maxpagenums/10,1024)
@@ -71,7 +57,7 @@ class DefenseLayer:
         addrsource = 0
         maxdismatch = 0
         minvalue = 100000000000
-        maxindex = 0####所有为0的页排名并列
+        maxindex = 0#
         dis = 0
         index = 0
         if self.start > 2:
@@ -98,7 +84,6 @@ class DefenseLayer:
                 self.life2sorted[i] = address2life[i]
         return (dismatch, maxdismatch)
     def attdetector(self, addr_temp, sortedlist):
-        #返回值：0：假stall 1：正常交换；2：reverseswap
         isswap = 1
         par1 = self.hotdistribute(sortedlist)
         par2 = self.hotmonitor(sortedlist)

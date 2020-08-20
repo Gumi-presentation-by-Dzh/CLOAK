@@ -10,13 +10,12 @@ tracepath = 'whb_trace.dat'
 pageshift = 12
 
 interinterval = 128
-swapthreshold = 32 ###visitcount小于swapthreshold的对不能进行交换
+swapthreshold = 32 ##
 mu = 0.3 
 sigma = mu*0.11 #
 
 class memorymodel:
     def __init__(self, areasize, attacktype, no, areashift, randomenable, randomshift):
-        ##areasize:最大页号，attacktype:攻击类型；no:序号；areashift：相对于页号的粒度移位4MB = 10
 
         self.maxpagenums = areasize
         self.attacktype = attacktype
@@ -43,39 +42,35 @@ class memorymodel:
             if(maxlifetime < x[i]):
                 maxlifetime = x[i]
             self.lifelist[i][0] = i
-            self.lifelist[i][1] = x[i]###页面i寿命为x[i]
+            self.lifelist[i][1] = x[i]#
             self.lifelist2[i][0] = i
-            self.lifelist2[i][1] = x[i]###页面i寿命为x[i]
-            #ideallifelist[i] = x[i]###页面i寿命为x[i]
+            self.lifelist2[i][1] = x[i]#
         print("minlifetime =%d,maxlifetime =%d"%(int(minlifetime),int(maxlifetime)))
         x = []
         self.pairlist = [0 for m in range(self.maxpagenums)]
         print("sort pages begin")
-        self.sortedlist = sorted(self.lifelist2, key = lambda x:x[1])####按照寿命排序后，进行配对，配对公式：
+        self.sortedlist = sorted(self.lifelist2, key = lambda x:x[1])#
         print("sort pages end")
         print("pair pages begin")
         for i in range(len(self.sortedlist)):
             self.pairlist[self.sortedlist[i][0]] = i
         print("pair pages end")
-        self.intermaptable = [0 for m in range(int(self.maxpagenums))]###记录对间映射
-        self.reversemaptable = [0 for m in range(int(self.maxpagenums))]###记录反向对间映射
+        self.intermaptable = [0 for m in range(int(self.maxpagenums))]
+        self.reversemaptable = [0 for m in range(int(self.maxpagenums))]
         for i in range(len(self.intermaptable)):
             self.intermaptable[i] = i
             self.reversemaptable[i] = i
-        self.isswap =  [0 for m in range(int(self.maxpagenums/2))] ##记录该对内部是否是处于交换状态
-        self.swapvisitcount = [0 for m in range(int(self.maxpagenums))]###########记录每个页从上次交换起被访问的次数
-        #self.hot_record = [0 for m in range(self.maxpagenums)]
+        self.isswap =  [0 for m in range(int(self.maxpagenums/2))] 
+        self.swapvisitcount = [0 for m in range(int(self.maxpagenums))]#
         self.swaptimes = 0
         self.interswaptimes = 0
     
         self.no = no
         self.endlifepath = 'type' + str(self.attacktype)+'_twlmm_climber_60_endlife.dat'
-    
         self.totalcount = 0
         self.remaptimes = 0
-        self.totaltime = 0####循环内次数
+        self.totaltime = 0##
     def getpairaddr(self, interswapcount,clifelist,areasize,addr_temp, intermaptable, reversemaptable,sourceaddr):
-    #global interinterval
         raddr = 0
         sourceaddr2 = 0
         pairaddr = 0
@@ -134,7 +129,7 @@ class memorymodel:
         isdoswap = 0
         pairindex_temp = self.pairlist[addr_temp]
         pairindex = 0
-        sourceaddr = 0 #要写的地址是块内块0还是块1的地址，用于判断是否交换 
+        sourceaddr = 0 
         if pairindex_temp >=self.maxpagenums / 2:
             pairindex = self.maxpagenums - 1 - pairindex_temp
             sourceaddr = 1
@@ -169,9 +164,6 @@ class memorymodel:
             else:
                 swaptemp = self.swaparbiter(self.lifelist[addr][1],self.lifelist[nowaddr2][1]) 
             if swaptemp ^ self.isswap[pairaddr] == 1:
-                #block end
-                #########################################
-                ###进行交换，匹配对寿命降低
                 self.swaptimes = self.swaptimes + 1
                 self.lifelist[addr][1] = self.lifelist[addr][1] - 1
                 if self.lifelist[addr][1] < 0:
@@ -183,7 +175,7 @@ class memorymodel:
             else:
                 #self.noswaptimes[pairaddr] = self.noswaptimes[pairaddr] + 1 
                 if sourceaddr ^ self.isswap[pairaddr] == 0:
-                    self.lifelist[addr][1] = self.lifelist[addr][1] - 1####当前页寿命降低
+                    self.lifelist[addr][1] = self.lifelist[addr][1] - 1##
                     if self.lifelist[addr][1] < 0:
                         return (-1,0)
                 else:
@@ -192,7 +184,7 @@ class memorymodel:
                         return (-1,0)
         else:
             if sourceaddr ^ self.isswap[pairaddr] == 0:
-                self.lifelist[addr][1] = self.lifelist[addr][1] - 1####当前页寿命降低
+                self.lifelist[addr][1] = self.lifelist[addr][1] - 1#
                 if self.lifelist[addr][1] < 0:
                     return (-1,0)
             else:
@@ -202,9 +194,6 @@ class memorymodel:
         self.totalcount = self.totalcount + 1
         if (self.totalcount - (2000000)) % (20000000) == 0:
             lifenowlist = sorted(self.lifelist, key = lambda x:x[1])
-            #for i in range(len(lifenowlist)):
-                #self.sortednow[i] = lifenowlist[i][0]
-            print('当前最弱页寿命：%d'%(int(lifenowlist[0][1])))
             maxwearrate = 0.0
             wearrate = 0.0
             maxlife = 0
@@ -218,10 +207,7 @@ class memorymodel:
                     maxlife = self.lifelist[i][1]
                     maxlife2 = self.lifelist2[i][1]
                     maxi = i
-            print('当前最大磨损率：%f'%(maxwearrate))
-            print('最大磨损页%d寿命：%f,%f'%(maxi,maxlife,maxlife2))
             mixi2 = self.sortedlist[self.maxpagenums - 1 - self.pairlist[maxi]][0]
-            print('配对页%d寿命：%f,%f'%(mixi2,self.lifelist[mixi2][1],self.lifelist2[mixi2][1]))
         return (0,0)
     def printstat(self):
         print("write endstat start")
