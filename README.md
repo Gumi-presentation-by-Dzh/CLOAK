@@ -19,7 +19,7 @@ CLOAK Dependencies, Running, and Result
 [root @node1 CLOAK]# python typeX_*_climber.py arg1 arg2
 ```
 * X = 0 is non-attack; X = 1 is Inconsistent Write Attack; X = 2 is Hot-cold Page Swapping Attack.
-* Arg1 and arg2 are used to enable our climber and WPRM schemes.
+* arg1 and arg2 are used to enable our climber and WPRM schemes.
 
 **3.Result**  
 &#160; &#160; &#160; &#160; The hotness deviation result and endurance result are recorded by defenselayer_*_climber.py and \*mm_climber.py in \*.dat files.
