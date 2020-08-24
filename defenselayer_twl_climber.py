@@ -17,7 +17,7 @@ randomshift = 10
 randomenable = 0
 ######################random end
 class DefenseLayer:
-    def __init__(self, areasize, attacktype,randomenable, reverseenable, stallenable):
+    def __init__(self, areasize, attacktype,climberenable, randomenable, stallenable):
         self.areashift = 10#
         self.maxpagenums = areasize
         self.attacktype = attacktype

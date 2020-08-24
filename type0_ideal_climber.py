@@ -17,7 +17,7 @@ endnums = 200001000
 climbershift = 10
 ##########################################################
 class AcListGenerator:
-    def __init__(self, type1, areasize, attackpp,randomenable, reverseenable, stallenable):
+    def __init__(self, type1, areasize, attackpp,climberenable, randomenable, stallenable):
         self.type = type1
         self.areasize = maxpagenums
         self.flag = 0
@@ -33,7 +33,7 @@ class AcListGenerator:
             for line in tracefile:
                 temp = int(line)
                 self.filelength = self.filelength + 1
-        self.d1 = dl.DefenseLayer(self.areasize, self.type,randomenable, reverseenable, stallenable,climbershift)
+        self.d1 = dl.DefenseLayer(self.areasize, self.type, climberenable, randomenable, stallenable,climbershift)
         self.visitlist = [0 for i in range(self.filelength)]
         self.filelength = 0
         with open(tracepath) as tracefile:

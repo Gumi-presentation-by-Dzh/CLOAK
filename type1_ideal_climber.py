@@ -20,7 +20,7 @@ endnums = 200001000 #
 attacknums = 0#
 ##########################################################
 class AcListGenerator:
-    def __init__(self, type1, areasize, attackpp,randomenable, reverseenable, stallenable):
+    def __init__(self, type1, areasize, attackpp,climberenable, randomenable, stallenable):
         if areasize <= 2:
             print('error:memorysize too small')
         self.type = type1
@@ -33,7 +33,7 @@ class AcListGenerator:
         self.round = 0
         self.count = 0
         self.hot = 1000000
-        self.d1 = dl.DefenseLayer(self.areasize, self.type,randomenable, reverseenable, stallenable, climbershift)
+        self.d1 = dl.DefenseLayer(self.areasize, self.type, climberenable, randomenable, stallenable,climbershift)
     def attackp(self):
         rn = random.random()
         if rn > self.attackpp:

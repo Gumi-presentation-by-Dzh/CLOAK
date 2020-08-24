@@ -18,7 +18,7 @@ randomshift = 17
 #randomenable = 0
 ######################random end
 class DefenseLayer:
-    def __init__(self, areasize, attacktype,randomenable, reverseenable, stallenable,climbershift):
+    def __init__(self, areasize, attacktype,climberenable, randomenable, stallenable,climbershift):
         self.areashift = 10##
         self.maxpagenums = areasize
         self.attacktype = attacktype
@@ -26,11 +26,11 @@ class DefenseLayer:
         self.attacknums = 0
         self.stat = 0 ##
         self.randomenable = randomenable
-        self.reverseenable = reverseenable
+        self.reverseenable = 0
         self.stallenable = stallenable
         self.start = 0
         no = 0
-        self.m1 = mm.memorymodel(self.maxpagenums, self.attacktype,no, self.areashift, randomenable, randomshift,reverseenable,stallenable,climbershift)
+        self.m1 = mm.memorymodel(self.maxpagenums, self.attacktype,no, self.areashift, climberenable, randomenable, randomshift,self.reverseenable,stallenable,climbershift)
         self.life2sorted = [0 for i in range(self.maxpagenums)]####climber
         self.logpath = "type"+str(self.attacktype)+"_defense_idealmm_threshold.dat"
         #self.life2sorted = self.m1.getlife2sorted()
@@ -63,10 +63,6 @@ class DefenseLayer:
         if self.start > 2:
             for i in range(self.maxpagenums):
                 if self.life2sorted[i] < areasize:
-                    weakwrite = self.m1.visitedback[i]
-                    if weakwrite != 0:
-                        self.logfile.write(U"weakaddr:%d\n"%i)
-                        self.logfile.write(U"weakwrite:%d\n"%(weakwrite))
                     if self.life2sorted[i] < address2life[i]:
                         dis = address2life[i] - self.life2sorted[i]
                     else:

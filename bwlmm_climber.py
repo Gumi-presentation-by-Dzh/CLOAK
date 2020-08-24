@@ -125,9 +125,10 @@ class bloomfilter :
 
 
 class memorymodel:
-    def __init__(self, areasize, attacktype, no, areashift, randomenable,randomshift, reverseenable,stallenable,climbershift):
+    def __init__(self, areasize, attacktype, no, areashift, climberenable, randomenable,randomshift, reverseenable,stallenable,climbershift):
         self.maxpagenums = areasize
         self.climbershift = climbershift
+        self.climberenable = climberenable
         areanums = self.maxpagenums >> 10
         print('self.maxpagenums' + str(self.maxpagenums))
         self.attacktype = attacktype
@@ -149,10 +150,10 @@ class memorymodel:
         self.reverseenable = reverseenable
         self.stallenable = stallenable
         self.randompath = ['', 'random_']
-        self.reversepath = ['', 'reverse_']
+        self.climberpath = ['', 'climber_']
         self.stallpath = ['', 'stall_']
-        self.endlifepath = 'type' + str(self.attacktype)+'_bwlmm_climber_'+str(climbershift)+'_'+self.randompath[self.randomenable] + \
-                            self.reversepath[self.reverseenable]+self.stallpath[self.stallenable]+'endlife.dat'
+        self.endlifepath = 'type' + str(self.attacktype)+'_bwlmm_'+str(climbershift)+'_'+self.climberpath[self.climberenable]+self.randompath[self.randomenable] + \
+                            self.stallpath[self.stallenable]+'endlife.dat'
         self.lifelist = [[0,0] for y in range(len(x))]
         self.lifelist2 = [[0,0] for y in range(len(x))]
         self.sortednow = [0 for  y in range(len(x))]
@@ -205,6 +206,8 @@ class memorymodel:
         self.rank2addr = [0 for  y in range(self.maxpagenums)]
         self.climberstart = [1 for  y in range(self.maxpagenums)]
         self.maxSL = 0
+        self.isvisited = [0 for  y in range(self.maxpagenums)]
+        self.visitedback = [0 for  y in range(self.maxpagenums)]
         self.map2weakaddr = self.maxpagenums - 1 
     def getrank2addr(self):
         return self.rank2addr
@@ -212,7 +215,7 @@ class memorymodel:
         addr= self.maplist[addr_temp]
         localclimbethreshold = self.climberlocthre[addr]
         maxup = 0
-        if counterv % (localclimbethreshold) == 0:
+        if (counterv % (localclimbethreshold) == 0) and (self.climberenable == 1):
             randommax = 1<<self.climbershift
             climberareaindex = self.climbla2hot[addr_temp] >> self.climbershift
             targetindex = climberareaindex
@@ -260,6 +263,7 @@ class memorymodel:
             self.disclimbtime = self.disclimbtime + 1
         return 0
     def access(self,addr_temp):
+        self.isvisited[addr_temp] = self.isvisited[addr_temp] + 1
         self.totaltime = self.totaltime + 1
         addr = self.maplist[addr_temp]
         if self.totalcount < remapthreshold:
@@ -274,7 +278,6 @@ class memorymodel:
             return (-1,[self.bloomfilter1.voidlist,self.bloomfilter2.voidlist],self.voidreturn)
         if self.totalcount == cyclethreshold:
             self.totalcount = 0
-            print('maxSL:%d'%(self.maxSL))
         if self.totalcount == remapthreshold:
             self.start = 1
             #self.totalcount = 0
@@ -300,6 +303,8 @@ class memorymodel:
             rank2 = self.bloomfilter2.rank()
             lifenowlist = sorted(self.lifelist, key = lambda x:x[1])
             for i in range(len(lifenowlist)):
+                self.visitedback[i] = self.isvisited[i]
+                self.isvisited[i] = 0
                 self.sortednow[i] = lifenowlist[i][0]
             maxwearrate = 0.0
             wearrate = 0.0
@@ -392,8 +397,6 @@ class memorymodel:
                     else:
                         self.climberstart[lifenowlist[index][0]] = 1
                     if len(lifenowlist) - 1 - mapindex == 0:
-                        print('lastweakaddrwrite:%d'%(self.bloomfilter1.getcount(self.map2weakaddr)))
-                        print('map2weakaddr:%d'%(bemapaddr))
                         self.map2wearaddr = bemapaddr
                         #print('map2weakaddr:%d'%(bemapaddr))
                     self.rank2addr[bemapaddr] = len(lifenowlist) - 1 - mapindex

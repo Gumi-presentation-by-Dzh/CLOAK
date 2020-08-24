@@ -14,9 +14,10 @@ climbethreshold = 10
 
 ##################################
 class memorymodel:
-    def __init__(self, areasize, attacktype, no, areashift, randomenable, randomshift,reverseenable,stallenable,climbershift):
+    def __init__(self, areasize, attacktype, no, areashift, climberenable, randomenable, randomshift,reverseenable,stallenable,climbershift):
         self.maxpagenums = areasize
         self.climbershift = climbershift
+        self.climberenable = climberenable
         areanums = self.maxpagenums >> 10
         self.attacktype = attacktype
         print('maxpagenums:' + str(self.maxpagenums))
@@ -28,10 +29,10 @@ class memorymodel:
         self.stallenable = stallenable
         self.life2sorted = [0 for x in range(self.maxpagenums)]
         self.randompath = ['', 'random_']
-        self.reversepath = ['', 'reverse_']
+        self.climberpath = ['', 'climber_']
         self.stallpath = ['', 'stall_']
-        self.endlifepath = 'type' + str(self.attacktype)+'_idealmm_climber_'+str(climbershift)+'_'+self.randompath[self.randomenable] + \
-                            self.reversepath[self.reverseenable]+self.stallpath[self.stallenable]+'endlife.dat'
+        self.endlifepath = 'type' + str(self.attacktype)+'_idealmm_'+str(climbershift)+'_'+self.climberpath[self.climberenable]+self.randompath[self.randomenable] + \
+                            self.stallpath[self.stallenable]+'endlife.dat'
         np.random.seed(0)
         print("gen life distribution begin")
         p = np.random.normal(loc = mu, scale = sigma, size = 2*areanums)
@@ -90,6 +91,7 @@ class memorymodel:
         self.disclimbtime =0
         self.rank2addrp = 0
         self.rank2addr = [0 for  y in range(self.maxpagenums)]
+        self.visitedback = [0 for  y in range(self.maxpagenums)]
         self.map2weakaddr = self.maxpagenums - 1
     def getlife2sorted(self):
         return self.life2sorted
@@ -100,7 +102,7 @@ class memorymodel:
         addr= self.maplist[addr_temp]
         localclimbethreshold = self.climberlocthre[addr]
         maxup = 0
-        if counterv % (localclimbethreshold) == 0:
+        if (counterv % (localclimbethreshold) == 0) and (self.climberenable == 1):
             #step = int(counterv / localclimbethreshold)
             randommax = 1<<self.climbershift
             climberareaindex = self.climbla2hot[addr_temp] >> self.climbershift
@@ -153,6 +155,7 @@ class memorymodel:
         return 0
     def clear(self):
         for i in range(len(self.visitcount)):
+            self.visitedback[self.visitcount[i][0]] = self.visitcount[i][1]
             self.visitcount[i][1] = 0
     def access(self,addr_temp2):
 
@@ -169,13 +172,12 @@ class memorymodel:
         if self.lifelist[addr][1] < 0:
             return (-1, self.visitcount, self.maplist)
         if self.totalcount == cyclethreshold:
-            print('maxSL:%d'%(self.maxSL))
             self.totalcount = 0
         if self.totalcount == remapthreshold:
             self.start = 1
             #print("remap begin")
             #self.totalcount = 0
-            visitsortedlist =sorted(self.visitcount, key = lambda x:x[1])
+            visitsortedlist = sorted(self.visitcount, key = lambda x:x[1])
             return (1, visitsortedlist, self.maplist)
             #print("remap end")
         elif self.totalcount % remapthreshold == 0:
@@ -210,8 +212,6 @@ class memorymodel:
                     maxlife2 = self.lifelist2[i][1]
                     maxi = i
             zeropoint = 0
-            print('hottestaddr:%d'%(visitsortedlist[len(visitsortedlist) - 1][0]))
-            print('hottestpage:%d'%(self.maplist[visitsortedlist[len(visitsortedlist) - 1][0]]))
             for i in range(len(visitsortedlist)):
                 if visitsortedlist[len(visitsortedlist) - 1 - i][1] == 0 and zeropoint < len(visitsortedlist) - 1 - i:
                     zeropoint = len(visitsortedlist) - 1 - i
@@ -229,8 +229,6 @@ class memorymodel:
                 else:
                     vindex = zeropoint - (len(visitsortedlist) - 1 - i)
                 if len(visitsortedlist) - 1 - i == 0:
-                    print('lastweakaddrwrite:%d'%(self.visitcount[self.map2weakaddr][1]))
-                    print('map2weakaddr:%d'%(visitsortedlist[vindex][0]))
                     self.map2wearaddr = visitsortedlist[vindex][0]
                 self.rank2addr[visitsortedlist[vindex][0]] = len(visitsortedlist) - 1 - i
                 if self.randomenable == 1 and index < (((int(self.maxpagenums/2))>>self.randomshift)<<self.randomshift):
@@ -244,6 +242,7 @@ class memorymodel:
                     if self.lifelist[self.maplist[visitsortedlist[vindex][0]]][1] < 0:
                         return (-1, visitsortedlist, self.maplist)
                 ###block1 end
+                self.visitedback[visitsortedlist[vindex][0]] = self.visitcount[visitsortedlist[vindex][0]][1]
                 self.visitcount[visitsortedlist[vindex][0]][1] = 0
                 self.maplist[visitsortedlist[vindex][0]] = lifenowlist[index][0]
                 self.reverselist[lifenowlist[index][0]] = visitsortedlist[vindex][0]

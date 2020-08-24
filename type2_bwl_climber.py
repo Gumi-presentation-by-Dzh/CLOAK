@@ -22,7 +22,7 @@ climbershift = 17
 attacksize = 1
 ##########################################################
 class AcListGenerator:
-    def __init__(self, type1, areasize, attackpp,randomenable, reverseenable, stallenable):
+    def __init__(self, type1, areasize, attackpp,climberenable, randomenable, stallenable):
         if areasize <= 2:
             print('error:memorysize too small')
         self.type = type1
@@ -36,7 +36,7 @@ class AcListGenerator:
         self.count = 0
         self.cycles = 10
         self.hot = 1000000
-        self.d1 = dl.DefenseLayer(self.areasize, self.type,randomenable, reverseenable, stallenable,climbershift)
+        self.d1 = dl.DefenseLayer(self.areasize, self.type, climberenable, randomenable, stallenable,climbershift)
         self.writelist = [-1 for x in range(self.areasize + 10)]
         self.writelistp = 0
         self.writelist2p = 0
@@ -85,7 +85,6 @@ class AcListGenerator:
                 sortedlist =sorted(self.visittable, key = lambda x:x[1])
                 hotaddr = self.gethotaddr(-1,sortedlist)
                 coldaddrpair = self.getcoldaddr(-1,sortedlist)
-                print('attackaddr:%d'%(coldaddrpair[0]))
                 for i in range(attacksize):
                     hotaddr = sortedlist[-1-i][0]
                     if coldaddrpair[1] - i >= 0:
