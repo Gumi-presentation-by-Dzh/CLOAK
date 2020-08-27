@@ -13,10 +13,15 @@ CLOAK Dependencies, Running, and Result
 
 **2.Running**
 
-* First, make sure the trace is in the ./ directory.
+* First, get trace files by:
+```javascript
+[root @node1 CLOAK/trace]# cat trace.tar.gz.* > trace.tar.gz
+[root @node1 CLOAK/trace]# tar -zxvf trace.tar.gz
+```
+* Then, copy the python files(.py) to the trace directory(CLOAK/trace/\*/).
 * Run CLOAK codes by:
 ```javascript
-[root @node1 CLOAK]# python typeX_*_climber.py arg1 arg2
+[root @node1 CLOAK/trace/*/]# python typeX_*_climber.py arg1 arg2
 ```
 * X = 0 is non-attack; X = 1 is Inconsistent Write Attack; X = 2 is Hot-cold Page Swapping Attack.
 * arg1 and arg2 are used to enable our climber and WPRM schemes.
